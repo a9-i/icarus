@@ -5,15 +5,16 @@ import time
 from datetime import datetime
 import app.cfg
 
+config = configparser.ConfigParser()
+config.read('icarus.config')
+abuseip = config['AbuseIPDB']['IPDBEnable']
+apikey = config['AbuseIPDB']['IPDBKey']
+hostname = config['ADDRESSES']['HOSTNAME']
 
-def abuseipdb(sessionpeer, mailfrom, mailto):
-    config = configparser.ConfigParser()
-    config.read('icarus.config')
-    abuseip = config['IPDBAPI']['AbuseIPDB']
-    apikey = config['IPDBAPI']['IPDBAPI']
-    # using configparser to pull the apikey details for abuseipdb.
+def report_smtp(sessionpeer, mailfrom, mailto):
+    message = f'SMTP attack triggered by {sessionpeer} ({hostname})'
     headers = {'Key': apikey, 'Accept': 'application/json', }
-    data = {'categories': '11', 'ip': sessionpeer, 'comment': 'Icarus Smtp honeypot github'}
+    data = {'categories': '11, 15', 'ip': sessionpeer, 'comment': message}
     # this is the API. https://docs.abuseipdb.com/#report-endpoint
 
     if abuseip != "no":  # checking if abuseipdb is enabled. Disabled by default.
@@ -23,14 +24,10 @@ def abuseipdb(sessionpeer, mailfrom, mailto):
             abusepost = requests.post(url, headers=headers, data=data)
 
 
-def report(ip):
-    config = configparser.ConfigParser()
-    config.read('icarus.config')
-    abuseip = config['IPDBAPI']['AbuseIPDB']
-    apikey = config['IPDBAPI']['IPDBAPI']
-    # using configparser to pull the apikey details for abuseipdb.
+def report(ip, port, type):
+    message = f'{type} attack on port {port} triggered by {ip} ({hostname})'
     headers = {'Key': apikey, 'Accept': 'application/json', }
-    data = {'categories': '15', 'ip': ip, 'comment': 'Icarus honeypot on github'}
+    data = {'categories': '15, 14', 'ip': ip, 'comment': message}
     # this is the API. https://docs.abuseipdb.com/#report-endpoint
 
     if abuseip != "no":  # checking if abuseipdb is enabled. Disabled by default.
@@ -40,8 +37,7 @@ def report(ip):
             abusepost = requests.post(url, headers=headers, data=data)
 
 
-def prereport(addr):
-
+def prereport(addr, port, type):
     day_of_year = datetime.now().timetuple().tm_yday
     # If we already have the address but no attack today. Report.
     if addr in app.cfg.attackdb:
@@ -50,7 +46,7 @@ def prereport(addr):
             app.cfg.largfeedqueue.append(addr)
     # If we don't have the address at all. Report.
     else:
-        report(addr)
+        report(addr, port, type)
         app.cfg.largfeedqueue.append(addr)
     app.cfg.attackdb[addr] = day_of_year
 

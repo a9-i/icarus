@@ -10,8 +10,8 @@ def virustotalfile(filename):
     
     config = configparser.ConfigParser()
     config.read('icarus.config')
-    apikey = config['APIKEY']['apikey']
-    virustotal = config['APIKEY']['Virustotal']
+    virustotal = config['VirusTotal']['VTEnable']
+    apikey = config['VirusTotal']['VTKey']
     URL_BASE = "https://www.virustotal.com/vtapi/v2/"
     url = URL_BASE + "file/scan"
     # This is just straight from virustotal link above

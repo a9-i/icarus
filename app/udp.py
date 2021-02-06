@@ -8,7 +8,7 @@ class icarus:
         self.transport = transport
 
     def datagram_received(self, data, addr):
-        prereport(addr[0])
+        prereport(addr[0], '?', 'UDP')
         lastattacker(addr[0])
 
 

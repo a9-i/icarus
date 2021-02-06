@@ -1,14 +1,14 @@
 import configparser
 import socket
 from app.memoryfile import inmemoryfile
-from app.abuseipdb import abuseipdb
+from app.abuseipdb import report_smtp
 from app.icarussyslog import syslogout
 from aiosmtpd.controller import Controller  # the controller that handles async smtp?
 
 
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
+    s.connect(("1.1.1.1", 80))
     return s.getsockname()[0]
 
 
@@ -27,7 +27,7 @@ smtpport = config['ADDRESSES']['SMTPPort']
 
 class smtphoney:
     async def handle_RCPT(self, server, session, envelope, address, rcpt_options):
-        abuseipdb(session.peer[0], envelope.mail_from, address)  # check abuseipdb.py for this function.
+        report_smtp(session.peer[0], envelope.mail_from, address)  # check abuseipdb.py for this function.
         envelope.rcpt_tos.append(address)
         return '250 OK'
         # straight out of documentation
