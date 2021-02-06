@@ -16,7 +16,7 @@ import app.cfg
 
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
+    s.connect(("1.1.1.1", 80))
     return s.getsockname()[0]
 
 
@@ -30,10 +30,10 @@ if config['ADDRESSES']['IP'] == "auto":
 else:
     IP = config['ADDRESSES']['IP']
 smtpport = config['ADDRESSES']['SMTPPort']
-abuseip = config['IPDBAPI']['AbuseIPDB']
-abuseapikey = config['IPDBAPI']['IPDBAPI']
-vtapikey = config['APIKEY']['apikey']
-virustotal = config['APIKEY']['Virustotal']
+abuseip = config['AbuseIPDB']['IPDBEnable']
+abuseapikey = config['AbuseIPDB']['IPDBKey']
+vtapikey = config['VirusTotal']['VTKey']
+virustotal = config['VirusTotal']['VTEnable']
 syslogenable = config['SYSLOG']['Syslog']
 syslogip = config['SYSLOG']['IP']
 syslogport = config['SYSLOG']['PORT']
